@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+import random
+from django.conf import settings
+
+from django.core.mail import send_mail
 
 # Create your models here.
 
@@ -25,6 +29,7 @@ class User(models.Model):
     college  = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     is_active = models.BooleanField(default=False)
+    otp = models.IntegerField(null=True)
 
     objects = CustomUserManager()
 
@@ -33,6 +38,17 @@ class User(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.otp = random.randint(1000, 9999)
+            subject = 'Verify your email'
+            message = f'Your OTP is: {self.otp}'
+            from_email = settings.EMAIL_HOST_USER
+            to_email = self.email
+            send_mail(subject, message, from_email, [to_email])
+
+        super(User, self).save(*args, **kwargs)
 
 class College(models.Model):
     title = models.CharField(max_length=500)

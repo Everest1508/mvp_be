@@ -6,16 +6,27 @@ from .serializers import UserSerializer,LoginSerializer,CollegeSerializer, Games
 from rest_framework.authtoken.models import Token
 from django.db.models import Q
 from rest_framework_simplejwt.tokens import RefreshToken
+import random
 
 
 class SignupView(APIView):
     
     serializer_class = UserSerializer
+    
     def post(self, request, *args, **kwargs):
+        user=User(request.data)
+    
         serializer = UserSerializer(data=request.data)
+        
         print(request.data)
         if serializer.is_valid():
+            
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
             user = serializer.save()
+            return Response({'access_token': access_token}, status=status.HTTP_201_CREATED)
+            
+            
             return Response({"data":serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
 
@@ -39,6 +50,29 @@ class LoginView(APIView):
                 'is_active': user.is_active
             }
         })
+        
+        
+class VerifyOTPView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        otp_entered = request.data.get('otp')
+    
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not user.otp:
+            return Response({'error': 'OTP not generated'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if otp_entered == user.otp:
+            user.otp = None
+            user.save()
+            user.is_active = True
+            user.save()
+            return Response({'message': 'Email verified successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)        
         
 class Users(APIView):
     def get(self,request):

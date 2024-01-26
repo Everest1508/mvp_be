@@ -133,3 +133,14 @@ REST_FRAMEWORK =  {
     'knox.auth.TokenAuthentication' ,
     ]
 }
+
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'theriteshmahale@gmail.com'  
+EMAIL_HOST_PASSWORD = 'cbmk ceoa dhdl hnkh'  
