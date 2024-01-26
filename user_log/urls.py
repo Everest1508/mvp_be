@@ -12,5 +12,6 @@ urlpatterns = [
     path("verify/", VerifyOTPView.as_view(), name=""),
     path('subevent/',SubEventCreateAPIView.as_view(),name=""),
     path('subevent/<int:id>/',AddUserView.as_view(),name=""),
-    path('event/',MainEventCreateAPIView.as_view(),name="")
+    path('event/',MainEventCreateAPIView.as_view(),name=""),
+    path('myevent/<int:id>',MyEventView.as_view(),name="")
 ]

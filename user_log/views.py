@@ -141,11 +141,20 @@ class SubEventCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class AddUserView(APIView):
-    def post(self,request,id,*args,**kwargs):
+    def post(self, request, id, *args, **kwargs):
         sub_event = get_object_or_404(SubEvents, pk=id)
-        user = get_object_or_404(User, pk=request.data['id'])
+
+        try:
+            user = User.objects.get(pk=request.data['id'])
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        user.participation = True
+        user.participated_event = sub_event.id
+        user.save()
         sub_event.participants.add(user)
-        return JsonResponse({"message":"Stored Successfully"})
+
+        return JsonResponse({"message": "Stored Successfully"})
     
 class MainEventCreateAPIView(APIView):
     def get(self,request):
@@ -162,3 +171,11 @@ class MainEventCreateAPIView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class MyEventView(APIView):
+    def get(self,request,id):
+        user = User.objects.get(id=id)
+        participated_event_id = user.participated_event
+        event = SubEvents.objects.filter(id=participated_event_id)
+        print(event)
+        serializer = SubEventsSerializer(event,many=True)
+        return Response(serializer.data)

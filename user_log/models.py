@@ -31,6 +31,7 @@ class User(models.Model):
     is_active = models.BooleanField(default=False)
     otp = models.IntegerField(null=True)
     participation = models.BooleanField(default=False)
+    participated_event = models.IntegerField(null=True)
 
     objects = CustomUserManager()
 
@@ -73,3 +74,4 @@ class SubEvents(models.Model):
 class MainEvent(models.Model):
     title = models.CharField(max_length=500,null=True)
     sub_events = models.ManyToManyField(SubEvents,related_name="sub_events")
+    
