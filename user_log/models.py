@@ -61,3 +61,13 @@ class Games(models.Model):
     
     def __str__(self):
         return self.title
+    
+class SubEvents(models.Model):
+    title = models.CharField(max_length=500)
+    game = models.ForeignKey(Games, on_delete=models.SET_NULL, null=True, blank=True)
+    description = models.TextField(null=True)
+    rules = models.TextField(null=True)
+    participants = models.ManyToManyField(User, related_name="events_participated",null=True,blank=True)
+    
+class MainEvent(models.Model):
+    sub_events = models.ManyToManyField(SubEvents,related_name="sub_events")

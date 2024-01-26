@@ -1,12 +1,14 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User,College,Games
-from .serializers import UserSerializer,LoginSerializer,CollegeSerializer, GamesSerializer
+from .models import *
+from .serializers import *
 from rest_framework.authtoken.models import Token
 from django.db.models import Q
 from rest_framework_simplejwt.tokens import RefreshToken
 import random
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 
 
 class SignupView(APIView):
@@ -56,7 +58,7 @@ class VerifyOTPView(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         otp_entered = request.data.get('otp')
-    
+
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
@@ -79,8 +81,7 @@ class Users(APIView):
         users = User.objects.all()
         serializer = UserSerializer(users,many=True)
         return Response(serializer.data)
-    
-
+       
 
         
 class CollegeListCreateView(APIView):
@@ -108,3 +109,40 @@ class GamesListCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class GamesListCreateView(APIView):
+    def get(self, request):
+        games = Games.objects.all()
+        serializer = GamesSerializer(games, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = GamesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubEventCreateAPIView(APIView):
+    def get(self,request):
+        events = SubEvents.objects.all()
+        serializer = SubEventsSerializer(events,many=True)
+        return Response(serializer.data)
+    def post(self, request, *args, **kwargs):
+        serializer = SubEventsSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class AddUserView(APIView):
+    def post(self,request,id,*args,**kwargs):
+        sub_event = get_object_or_404(SubEvents, pk=id)
+        user = get_object_or_404(User, pk=request.data['id'])
+        sub_event.participants.add(user)
+        return JsonResponse({"message":"Stored Successfully"})
