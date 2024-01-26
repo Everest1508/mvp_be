@@ -146,3 +146,19 @@ class AddUserView(APIView):
         user = get_object_or_404(User, pk=request.data['id'])
         sub_event.participants.add(user)
         return JsonResponse({"message":"Stored Successfully"})
+    
+class MainEventCreateAPIView(APIView):
+    def get(self,request):
+        events = MainEvent.objects.all()
+        print(events)
+        serializer = MainEventsSerializer(events,many=True)
+        return Response(serializer.data)
+    def post(self, request, *args, **kwargs):
+        serializer = SubEventsSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

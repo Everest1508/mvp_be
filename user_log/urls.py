@@ -11,5 +11,6 @@ urlpatterns = [
     path('games/', GamesListCreateView.as_view(), name='games-list-create'),
     path("verify/", VerifyOTPView.as_view(), name=""),
     path('subevent/',SubEventCreateAPIView.as_view(),name=""),
-    path('subevent/<int:id>/',AddUserView.as_view(),name="")
+    path('subevent/<int:id>/',AddUserView.as_view(),name=""),
+    path('event/',MainEventCreateAPIView.as_view(),name="")
 ]

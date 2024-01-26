@@ -30,6 +30,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     is_active = models.BooleanField(default=False)
     otp = models.IntegerField(null=True)
+    participation = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
@@ -67,7 +68,8 @@ class SubEvents(models.Model):
     game = models.ForeignKey(Games, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True)
     rules = models.TextField(null=True)
-    participants = models.ManyToManyField(User, related_name="events_participated",null=True,blank=True)
+    participants = models.ManyToManyField(User, related_name="events_participated",blank=True)
     
 class MainEvent(models.Model):
+    title = models.CharField(max_length=500,null=True)
     sub_events = models.ManyToManyField(SubEvents,related_name="sub_events")

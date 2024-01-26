@@ -24,7 +24,18 @@ class GamesSerializer(serializers.ModelSerializer):
         model = Games
         fields = ('id', 'title')
         
+
+
 class SubEventsSerializer(serializers.ModelSerializer):
+    participants = UserSerializer(many=True)
+
     class Meta:
         model = SubEvents
-        fields = '__all__'
+        fields = ['id', 'title', 'game', 'description', 'rules', 'participants']
+
+class MainEventsSerializer(serializers.ModelSerializer):
+    sub_events = SubEventsSerializer(many=True)
+
+    class Meta:
+        model = MainEvent
+        fields = ['id', 'title', 'sub_events']
