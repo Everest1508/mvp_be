@@ -28,6 +28,7 @@ class GamesSerializer(serializers.ModelSerializer):
 
 class SubEventsSerializer(serializers.ModelSerializer):
     participants = UserSerializer(many=True)
+    game = GamesSerializer()
 
     class Meta:
         model = SubEvents

@@ -26,7 +26,7 @@ class SignupView(APIView):
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             user = serializer.save()
-            return Response({'access_token': access_token}, status=status.HTTP_201_CREATED)
+            return Response({'access_token': access_token,"message":"OTP sent on mail"}, status=status.HTTP_201_CREATED)
             
             
             return Response({"data":serializer.data}, status=status.HTTP_201_CREATED)
